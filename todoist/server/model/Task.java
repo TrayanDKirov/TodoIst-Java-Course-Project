@@ -2,14 +2,16 @@ package bg.sofia.uni.fmi.mjt.project.todoist.server.model;
 
 import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.TaskParameterNotSet;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Task {
     private String name;
-    private LocalDateTime date;
-    private LocalDateTime dueDate;
+    private LocalDate date;
+    private LocalDate dueDate;
     private String description;
+
+    private boolean completed;
 
     private Task(Builder builder) {
         if (builder == null) {
@@ -20,6 +22,8 @@ public class Task {
         this.date = builder.date;
         this.dueDate = builder.dueDate;
         this.description = builder.description;
+
+        this.completed = false;
     }
 
     public String getName() {
@@ -30,7 +34,7 @@ public class Task {
         return date != null;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         if (date == null) {
             throw new TaskParameterNotSet("Date has not been set");
         }
@@ -42,7 +46,7 @@ public class Task {
         return dueDate != null;
     }
 
-    public LocalDateTime getDueDate() {
+    public LocalDate getDueDate() {
         if (dueDate == null) {
             throw new TaskParameterNotSet("Due date has not been set");
         }
@@ -62,10 +66,23 @@ public class Task {
         return this.description;
     }
 
+    boolean isCompleted() {
+        return this.completed;
+    }
+
+    boolean complete() {
+        if (completed) {
+            return false;
+        }
+
+        completed = true;
+        return true;
+    }
+
     public static class Builder {
         private String name;
-        private LocalDateTime date;
-        private LocalDateTime dueDate;
+        private LocalDate date;
+        private LocalDate dueDate;
         private String description;
 
         public Builder(String name) {
