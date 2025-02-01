@@ -26,7 +26,8 @@ public class UserImpl implements User {
         return this.username;
     }
 
-    private boolean isPasswordCorrect(String passwordToCheck) {
+    @Override
+    public boolean isPasswordCorrect(String passwordToCheck) {
         return password.equals(passwordToCheck);
     }
 
