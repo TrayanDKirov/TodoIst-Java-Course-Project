@@ -15,6 +15,9 @@ public class InMemoryTodoIstRepository implements TodoIstRepository {
     private Map<String, User> users;
     private File dataFile;
 
+    private boolean isLoaded = true;
+    private boolean isSaved;
+
     private boolean isFileValid(File file) {
         return file.isFile() && file.getName().endsWith(DATA_FILE_EXTENSION);
     }
@@ -39,8 +42,18 @@ public class InMemoryTodoIstRepository implements TodoIstRepository {
     }
 
     @Override
+    public boolean isLoaded() {
+        return this.isLoaded;
+    }
+
+    @Override
     public void save() {
 
+    }
+
+    @Override
+    public boolean isSaved() {
+        return this.isSaved;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class TodoIstServer {
         this.repository = new InMemoryTodoIstRepository(repositoryFilePath);
     }
 
-    void start() {
+    public void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT);
              ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
@@ -31,6 +31,7 @@ public class TodoIstServer {
 
             while (isServerWorking) {
                 currClientSocket = serverSocket.accept();
+                System.out.println("Connected to client. ");
 
                 ClientHandler currClientHandler = new ClientHandler(currClientSocket, repository);
 
@@ -42,7 +43,7 @@ public class TodoIstServer {
         }
     }
 
-    void stop() {
+    public void stop() {
         isServerWorking = false;
 
         repository.save();

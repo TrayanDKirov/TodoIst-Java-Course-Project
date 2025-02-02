@@ -1,7 +1,8 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server;
 
-import bg.sofia.uni.fmi.mjt.project.todoist.server.command.AccountCommand;
-import bg.sofia.uni.fmi.mjt.project.todoist.server.command.AccountCommandResult;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.command.accountcommand.AccountCommand;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.command.accountcommand.AccountCommandFactory;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.command.accountcommand.AccountCommandResult;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.AccoutException;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.repository.TodoIstRepository;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.user.User;
@@ -39,6 +40,20 @@ public class ClientHandler implements Runnable {
 
     }
 
+    private void sendOutput(PrintWriter toClient, String output) {
+        String[] lines = output.split(System.lineSeparator());
+
+        int linesToSend = output.split(System.lineSeparator()).length;
+        int index = 0;
+
+        toClient.println(linesToSend);
+        while (index != linesToSend) {
+            toClient.println(lines[index]);
+
+            index++;
+        }
+    }
+
     private void interactWithClient(PrintWriter toClient, BufferedReader fromClient) throws IOException {
         if (toClient == null || fromClient == null) {
             throw new IllegalArgumentException("Null reference in ClientHandler::interactWithClient");
@@ -48,20 +63,22 @@ public class ClientHandler implements Runnable {
         String output;
         while ((input = fromClient.readLine()) != null) {
             try {
-                AccountCommand accountCommand = AccountCommand.of(input);
+                AccountCommand accountCommand = AccountCommandFactory.of(input);
 
                 AccountCommandResult result = accountCommand.execute(repository);
 
-                isLoggedIn = true;
-                currUser = result.user();
-                passwordToCurrUser = result.passwordOfUser();
+                if (result.isUserAndPasswordSet()) {
+                    isLoggedIn = true;
+                    currUser = result.getUser();
+                    passwordToCurrUser = result.getPasswordOfUser();
+                }
 
-                output = result.output();
+                output = result.getOutput();
             } catch (AccoutException ex) {
                 output = ex.getMessage();
             }
 
-            toClient.println(output);
+            sendOutput(toClient, output);
             if (isLoggedIn) {
                 interactWithUser(toClient, fromClient);
             }

@@ -93,28 +93,29 @@ public class Task {
             this.name = name;
         }
 
-        void setDate(String dateStr) {
+        public Builder setDate(String dateStr) {
             if (dateStr == null) {
                 throw new IllegalArgumentException("Null reference in Task::Builder::setDate");
             }
 
-
+            return this;
         }
 
-        void setDueDate(String dueDateStr) {
+        public Builder setDueDate(String dueDateStr) {
             if (dueDateStr == null) {
                 throw new IllegalArgumentException("Null reference in Task::Builder::setDueDate");
             }
 
-
+            return this;
         }
 
-        void setDescription(String description) {
+        public Builder setDescription(String description) {
             if (description == null) {
                 throw new IllegalArgumentException("Null reference in Task::Builder::setDate");
             }
 
             this.description = description;
+            return this;
         }
 
         public Task build() {
