@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.exception;
 
-public class TaskNotFound extends Exception {
+public class TaskNotFound extends CommandException {
     public TaskNotFound(String message) {
         super(message);
     }

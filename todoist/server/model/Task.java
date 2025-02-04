@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.project.todoist.server.model;
 
 import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.TaskParameterNotSet;
 
+import java.io.PrintStream;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -66,11 +67,11 @@ public class Task {
         return this.description;
     }
 
-    boolean isCompleted() {
+    public boolean isCompleted() {
         return this.completed;
     }
 
-    boolean complete() {
+    public boolean complete() {
         if (completed) {
             return false;
         }
@@ -121,6 +122,28 @@ public class Task {
         public Task build() {
             return new Task(this);
         }
+    }
+
+    public String getInfo() {
+        StringBuilder result = new StringBuilder("Name: ");
+        result.append(name);
+
+        if (isDateSet()) {
+            result.append(System.lineSeparator())
+                .append("Date: ").append(TaskUtils.fromDateToString(date));
+        }
+
+        if (isDueDateSet()) {
+            result.append(System.lineSeparator())
+                .append("Due date: ").append(TaskUtils.fromDateToString(dueDate));
+        }
+
+        if (isDescriptionSet()) {
+            result.append(System.lineSeparator())
+                .append("Description: ").append(description);
+        }
+
+        return result.toString().intern();
     }
 
     @Override

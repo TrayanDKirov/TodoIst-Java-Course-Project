@@ -12,11 +12,15 @@ public interface TaskCluster {
 
     Task getTask(String name, LocalDate date) throws TaskNotFound;
 
-    boolean deleteTask(String nameOfTask);
+    void replaceTask(String name, Task taskToReplace);
 
-    boolean deleteTask(String nameOfTask, LocalDate date);
+    void replaceTask(String name, LocalDate date, Task taskToReplace);
 
-    Map<String, Task> getTasks();
+    void deleteTask(String nameOfTask) throws TaskNotFound;
 
-    Map<String, Task> getTasks(LocalDate date);
+    void deleteTask(String nameOfTask, LocalDate date) throws TaskNotFound;
+
+    Map<String, Task> getTasks() throws TaskNotFound;
+
+    Map<String, Task> getTasks(LocalDate date) throws TaskNotFound;
 }

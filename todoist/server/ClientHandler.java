@@ -1,8 +1,8 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server;
 
-import bg.sofia.uni.fmi.mjt.project.todoist.server.command.accountcommand.AccountCommand;
-import bg.sofia.uni.fmi.mjt.project.todoist.server.command.accountcommand.AccountCommandFactory;
-import bg.sofia.uni.fmi.mjt.project.todoist.server.command.accountcommand.AccountCommandResult;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand.AccountCommand;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand.AccountCommandFactory;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand.AccountCommandResult;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.AccoutException;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.repository.TodoIstRepository;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.user.User;

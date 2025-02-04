@@ -82,18 +82,20 @@ public class TaskClusterImpl implements TaskCluster {
     }
 
     @Override
-    public boolean deleteTask(String nameOfTask) {
+    public void deleteTask(String nameOfTask) throws TaskNotFound {
         if (nameOfTask == null) {
             throw new IllegalArgumentException("Null reference in TaskCluster::deleteTask(name)");
         }
 
         Task deletedTask = inboxTasks.remove(nameOfTask);
 
-        return deletedTask != null;
+        if (deletedTask == null) {
+            throw new TaskNotFound("Task with this name was not found. ");
+        }
     }
 
     @Override
-    public boolean deleteTask(String nameOfTask, LocalDate date) {
+    public void deleteTask(String nameOfTask, LocalDate date) throws TaskNotFound {
         if (nameOfTask == null || date == null) {
             throw new IllegalArgumentException("Null reference in TaskCluster::deleteTask(name, date)");
         }
@@ -101,21 +103,30 @@ public class TaskClusterImpl implements TaskCluster {
         if (datedTasks.containsKey(date)) {
             Task deletedTask = datedTasks.get(date).remove(nameOfTask);
 
-            return deletedTask != null;
+            if (datedTasks.get(date).isEmpty()) {
+                datedTasks.remove(date);
+            }
+
+            if (deletedTask != null) {
+                return;
+            }
         }
 
-        return false;
+        throw new TaskNotFound("Task with this name and date was not found. ");
     }
 
     @Override
-    public Map<String, Task> getTasks() {
+    public Map<String, Task> getTasks() throws TaskNotFound {
+        if (inboxTasks.isEmpty()) {
+            throw new TaskNotFound("No tasks found in inbox. ");
+        }
         return Map.copyOf(inboxTasks);
     }
 
     @Override
-    public Map<String, Task> getTasks(LocalDate date) {
+    public Map<String, Task> getTasks(LocalDate date) throws TaskNotFound {
         if (!datedTasks.containsKey(date)) {
-            return Map.of();
+            throw new TaskNotFound("No tasks for date: " + TaskUtils.fromDateToString(date) + ". ");
         }
 
         return Map.copyOf(datedTasks.get(date));
