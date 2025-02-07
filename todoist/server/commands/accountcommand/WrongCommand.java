@@ -1,18 +1,18 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand;
 
+import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.taskcommands.TaskCommand;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.model.TaskCluster;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.repository.TodoIstRepository;
 
-public class WrongCommand implements AccountCommand {
+public class WrongCommand implements AccountCommand, TaskCommand {
     private String output;
-    private String commandUsed;
 
     public WrongCommand(String commandUsed) {
         if (commandUsed == null) {
             throw new IllegalArgumentException("Null reference in WrongCommand constructor. ");
         }
 
-        this.commandUsed = commandUsed;
-        this.output = "Unknown command used- " +  commandUsed + ". Use command \"help\" to see all commands. ";
+        this.output = "Unknown command used - " +  commandUsed + ". Use command \"help\" to see all commands. ";
     }
 
     @Override
@@ -23,5 +23,10 @@ public class WrongCommand implements AccountCommand {
 
         return new AccountCommandResult.Builder(output)
             .build();
+    }
+
+    @Override
+    public String execute(TaskCluster taskCluster) {
+        return output;
     }
 }

@@ -45,7 +45,8 @@ public class TaskUtils {
 
         StringBuilder result = new StringBuilder();
         for (Task currTask : tasks) {
-            result.append(System.lineSeparator()).append(currTask.getInfo());
+            result.append(System.lineSeparator())
+                .append(System.lineSeparator()).append(currTask.getInfo());
         }
 
         return result;

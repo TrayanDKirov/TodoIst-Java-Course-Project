@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.user;
 
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongPasswordException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongPassword;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.model.TaskCluster;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.model.TaskClusterImpl;
 
@@ -32,18 +32,18 @@ public class UserImpl implements User {
     }
 
     @Override
-    public void changePassword(String oldPassword, String newPassword) throws WrongPasswordException {
+    public void changePassword(String oldPassword, String newPassword) throws WrongPassword {
         if (!isPasswordCorrect(oldPassword)) {
-            throw new WrongPasswordException("Old password is incorrect. ");
+            throw new WrongPassword("Old password is incorrect. ");
         }
 
         this.password = newPassword;
     }
 
     @Override
-    public TaskCluster getTasks(String password) throws WrongPasswordException {
+    public TaskCluster getTasks(String password) throws WrongPassword {
         if (!isPasswordCorrect(password)) {
-            throw new WrongPasswordException("Password is incorrect. You don't have access to this data");
+            throw new WrongPassword("Password is incorrect. You don't have access to this data");
         }
 
         return this.tasks;

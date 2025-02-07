@@ -3,7 +3,11 @@ package bg.sofia.uni.fmi.mjt.project.todoist.server;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand.AccountCommand;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand.AccountCommandFactory;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand.AccountCommandResult;
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.AccoutException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.taskcommands.TaskCommand;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.taskcommands.TaskCommandFactory;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.AccountException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.CommandException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.model.TaskCluster;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.repository.TodoIstRepository;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.user.User;
 
@@ -36,14 +40,10 @@ public class ClientHandler implements Runnable {
         this.isLoggedIn = false;
     }
 
-    private void interactWithUser(PrintWriter toClient, BufferedReader fromClient) throws IOException {
-
-    }
-
     private void sendOutput(PrintWriter toClient, String output) {
         String[] lines = output.split(System.lineSeparator());
 
-        int linesToSend = output.split(System.lineSeparator()).length;
+        int linesToSend = lines.length;
         int index = 0;
 
         toClient.println(linesToSend);
@@ -54,6 +54,31 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private void interactWithUser(PrintWriter toClient, BufferedReader fromClient)
+        throws IOException, AccountException {
+        if (toClient == null || fromClient == null || currUser == null || passwordToCurrUser == null) {
+            throw new IllegalArgumentException("Null reference in ClientHandler::interactWithUser");
+        }
+
+        TaskCluster taskCluster = currUser.getTasks(passwordToCurrUser);
+
+        String input;
+        String output;
+        while ((input = fromClient.readLine()) != null) {
+            try {
+
+                TaskCommand command = TaskCommandFactory.of(input);
+
+                output = command.execute(taskCluster);
+
+            } catch (CommandException commandException) {
+                output = commandException.getMessage();
+            }
+
+            sendOutput(toClient, output);
+        }
+    }
+
     private void interactWithClient(PrintWriter toClient, BufferedReader fromClient) throws IOException {
         if (toClient == null || fromClient == null) {
             throw new IllegalArgumentException("Null reference in ClientHandler::interactWithClient");
@@ -61,10 +86,18 @@ public class ClientHandler implements Runnable {
 
         String input;
         String output;
-        while ((input = fromClient.readLine()) != null) {
+        while (true) {
             try {
-                AccountCommand accountCommand = AccountCommandFactory.of(input);
+                if (isLoggedIn) {
+                    interactWithUser(toClient, fromClient);
+                    break;
+                }
 
+                if ((input = fromClient.readLine()) == null) {
+                    break;
+                }
+
+                AccountCommand accountCommand = AccountCommandFactory.of(input);
                 AccountCommandResult result = accountCommand.execute(repository);
 
                 if (result.isUserAndPasswordSet()) {
@@ -74,14 +107,11 @@ public class ClientHandler implements Runnable {
                 }
 
                 output = result.getOutput();
-            } catch (AccoutException ex) {
-                output = ex.getMessage();
+            } catch (AccountException accountException) {
+                output = accountException.getMessage();
             }
 
             sendOutput(toClient, output);
-            if (isLoggedIn) {
-                interactWithUser(toClient, fromClient);
-            }
         }
     }
 

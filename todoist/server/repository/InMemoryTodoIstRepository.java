@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.repository;
 
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UserNameIsTakenException;
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UserNotFoundException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UsernameIsTaken;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UserNotFound;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.user.User;
 
 import java.io.File;
@@ -22,7 +22,12 @@ public class InMemoryTodoIstRepository implements TodoIstRepository {
         return file.isFile() && file.getName().endsWith(DATA_FILE_EXTENSION);
     }
 
-    public InMemoryTodoIstRepository(Path pathToDataFile) {
+    public InMemoryTodoIstRepository() {
+        this.users = new LinkedHashMap<>();
+    }
+
+    @Override
+    public void setDataFilePath(Path pathToDataFile) {
         if (pathToDataFile == null) {
             throw new IllegalArgumentException("Null reference in InMemoryTodoIstRepository constructor. ");
         }
@@ -32,8 +37,7 @@ public class InMemoryTodoIstRepository implements TodoIstRepository {
             throw new IllegalArgumentException("Path isn't to a valid file(should be to .dat file). ");
         }
 
-        this.users = new LinkedHashMap<>();
-        this.dataFile = file;
+        this.dataFile = pathToDataFile.toFile();
     }
 
     @Override
@@ -66,7 +70,7 @@ public class InMemoryTodoIstRepository implements TodoIstRepository {
     }
 
     @Override
-    public User getUser(String username) throws UserNotFoundException {
+    public User getUser(String username) throws UserNotFound {
         if (username == null) {
             throw new IllegalArgumentException("Null reference in InMemoryTodoIstRepository::getUser");
         }
@@ -76,17 +80,17 @@ public class InMemoryTodoIstRepository implements TodoIstRepository {
             return toReturn;
         }
 
-        throw new UserNotFoundException("User with this user name was not found. ");
+        throw new UserNotFound("User with this user name was not found. ");
     }
 
     @Override
-    public void addUser(User user) throws UserNameIsTakenException {
+    public void addUser(User user) throws UsernameIsTaken {
         if (user == null) {
             throw new IllegalArgumentException("Null reference in InMemoryTodoIstRepository::addUser");
         }
 
         if (isUsernameTaken(user.getUsername())) {
-            throw new UserNameIsTakenException("User name is already taken. ");
+            throw new UsernameIsTaken("User name is already taken. ");
         }
 
         users.put(user.getUsername(), user);

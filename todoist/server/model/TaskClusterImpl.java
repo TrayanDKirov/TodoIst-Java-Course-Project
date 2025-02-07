@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.model;
 
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.TaskAlreadyExists;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.TaskNotFound;
 
 import java.time.LocalDate;
@@ -15,21 +16,30 @@ public class TaskClusterImpl implements TaskCluster {
         this.datedTasks = new LinkedHashMap<>();
     }
 
-    private void addTaskToInbox(Task taskToAdd) {
+    private void addTaskToInbox(Task taskToAdd) throws TaskAlreadyExists {
         if (taskToAdd == null) {
             throw new IllegalArgumentException("Null reference in TaskClusterImpl::addTaskToInbox");
+        }
+
+        if (inboxTasks.containsKey(taskToAdd.getName())) {
+            throw new TaskAlreadyExists("Task with this name in your inbox already exists. ");
         }
 
         inboxTasks.put(taskToAdd.getName(), taskToAdd);
     }
 
-    private void addDatedTask(Task taskToAdd) {
+    private void addDatedTask(Task taskToAdd) throws TaskAlreadyExists {
         if (taskToAdd == null) {
             throw new IllegalArgumentException("Null reference in TaskClusterImpl::addDatedTask");
         }
 
         if (datedTasks.containsKey(taskToAdd.getDate())) {
+            if (datedTasks.get(taskToAdd.getDate()).containsKey(taskToAdd.getName())) {
+                throw new TaskAlreadyExists("Task with this name and date already exists. ");
+            }
+
             datedTasks.get(taskToAdd.getDate()).put(taskToAdd.getName(), taskToAdd);
+            return;
         }
 
         Map<String, Task> newDateTasks = new LinkedHashMap<>();
@@ -39,13 +49,14 @@ public class TaskClusterImpl implements TaskCluster {
     }
 
     @Override
-    public void addTask(Task taskToAdd) {
+    public void addTask(Task taskToAdd) throws TaskAlreadyExists {
         if (taskToAdd == null) {
             throw new IllegalArgumentException("Null reference in TaskClusterImpl::addTask");
         }
 
         if (!taskToAdd.isDateSet()) {
             addTaskToInbox(taskToAdd);
+            return;
         }
 
         addDatedTask(taskToAdd);
@@ -57,7 +68,7 @@ public class TaskClusterImpl implements TaskCluster {
             throw new IllegalArgumentException("Null reference in TaskClusterImpl::getTask(name)");
         }
 
-        Task toReturn =  inboxTasks.get(name);
+        Task toReturn = inboxTasks.get(name);
         if (toReturn == null) {
             throw new TaskNotFound("Task with this name was not found. ");
         }
@@ -79,6 +90,44 @@ public class TaskClusterImpl implements TaskCluster {
         }
 
         throw new TaskNotFound("Task with this name and date was not found. ");
+    }
+
+    @Override
+    public void updateTask(String name, Task taskWithUpdatedFields) throws TaskNotFound {
+        if (name == null || taskWithUpdatedFields == null) {
+            throw new IllegalArgumentException("Null reference in TaskCluster::updateTask. ");
+        }
+
+        Task taskToUpdate = getTask(name);
+        deleteTask(name);
+
+        taskToUpdate.updateTask(taskWithUpdatedFields);
+
+        try {
+            addTask(taskToUpdate);
+        } catch (TaskAlreadyExists exception) {
+            throw new RuntimeException(
+                "This should not be possible. Task still exits after being deleted. TaskClusterImpl::UpdateTask. ");
+        }
+    }
+
+    @Override
+    public void updateTask(String name, LocalDate date, Task taskWithUpdatedFields) throws TaskNotFound {
+        if (name == null || taskWithUpdatedFields == null) {
+            throw new IllegalArgumentException("Null reference in TaskCluster::updateTask. ");
+        }
+
+        Task taskToUpdate = getTask(name, date);
+        deleteTask(name, date);
+
+        taskToUpdate.updateTask(taskWithUpdatedFields);
+
+        try {
+            addTask(taskToUpdate);
+        } catch (TaskAlreadyExists exception) {
+            throw new RuntimeException(
+                "This should not be possible. Task still exits after being deleted. TaskClusterImpl::UpdateTask. ");
+        }
     }
 
     @Override

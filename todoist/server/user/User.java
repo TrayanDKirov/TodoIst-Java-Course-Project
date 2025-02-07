@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.user;
 
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongPasswordException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongPassword;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.model.TaskCluster;
 
 public interface User {
@@ -8,7 +8,7 @@ public interface User {
 
     boolean isPasswordCorrect(String passwordToCheck);
 
-    void changePassword(String oldPassword, String newPassword) throws WrongPasswordException;
+    void changePassword(String oldPassword, String newPassword) throws WrongPassword;
 
-    TaskCluster getTasks(String password) throws WrongPasswordException;
+    TaskCluster getTasks(String password) throws WrongPassword;
 }

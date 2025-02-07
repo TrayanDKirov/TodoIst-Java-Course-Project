@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand;
 
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UserNameIsTakenException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UsernameIsTaken;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.repository.TodoIstRepository;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.user.User;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.user.UserImpl;
@@ -25,7 +25,7 @@ public class RegisterCommand implements AccountCommand {
     }
 
     @Override
-    public AccountCommandResult execute(TodoIstRepository repository) throws UserNameIsTakenException {
+    public AccountCommandResult execute(TodoIstRepository repository) throws UsernameIsTaken {
         if (repository == null) {
             throw new IllegalArgumentException("Null reference in RegisterCommand::execute");
         }

@@ -1,8 +1,8 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.model;
 
+import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.commandparameters.CommandParameters;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.TaskParameterNotSet;
 
-import java.io.PrintStream;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -94,18 +94,22 @@ public class Task {
             this.name = name;
         }
 
-        public Builder setDate(String dateStr) {
-            if (dateStr == null) {
+        public Builder setDate(LocalDate date) {
+            if (date == null) {
                 throw new IllegalArgumentException("Null reference in Task::Builder::setDate");
             }
+
+            this.date = date;
 
             return this;
         }
 
-        public Builder setDueDate(String dueDateStr) {
-            if (dueDateStr == null) {
+        public Builder setDueDate(LocalDate dueDate) {
+            if (dueDate == null) {
                 throw new IllegalArgumentException("Null reference in Task::Builder::setDueDate");
             }
+
+            this.dueDate = dueDate;
 
             return this;
         }
@@ -116,6 +120,7 @@ public class Task {
             }
 
             this.description = description;
+
             return this;
         }
 
@@ -125,25 +130,52 @@ public class Task {
     }
 
     public String getInfo() {
-        StringBuilder result = new StringBuilder("Name: ");
-        result.append(name);
+        StringBuilder result = new StringBuilder("Name: ").append(name)
+            .append(" Completed: ").append(completed);
+
+        result.append(System.lineSeparator()).append("Date: ");
 
         if (isDateSet()) {
-            result.append(System.lineSeparator())
-                .append("Date: ").append(TaskUtils.fromDateToString(date));
+            result.append(TaskUtils.fromDateToString(date));
+        } else {
+            result.append("none");
         }
+
+        result.append(System.lineSeparator()).append("Due date: ");
 
         if (isDueDateSet()) {
-            result.append(System.lineSeparator())
-                .append("Due date: ").append(TaskUtils.fromDateToString(dueDate));
+            result.append(TaskUtils.fromDateToString(dueDate));
+        } else {
+            result.append("none");
         }
 
+        result.append(System.lineSeparator()).append("Description: ");
+
         if (isDescriptionSet()) {
-            result.append(System.lineSeparator())
-                .append("Description: ").append(description);
+            result.append(description);
+        } else {
+            result.append("none");
         }
 
         return result.toString().intern();
+    }
+
+    public void updateTask(Task taskWithNewFields) {
+        if (taskWithNewFields == null) {
+            throw new IllegalArgumentException("Null reference in Task::updateTask. ");
+        }
+
+        if (taskWithNewFields.isDateSet()) {
+            this.date = taskWithNewFields.date;
+        }
+
+        if (taskWithNewFields.isDueDateSet()) {
+            this.dueDate = taskWithNewFields.dueDate;
+        }
+
+        if (taskWithNewFields.isDescriptionSet()) {
+            this.description = taskWithNewFields.description;
+        }
     }
 
     @Override

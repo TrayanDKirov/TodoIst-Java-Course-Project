@@ -17,7 +17,9 @@ public class TodoIstServer {
     private boolean isServerWorking;
 
     public TodoIstServer(Path repositoryFilePath) {
-        this.repository = new InMemoryTodoIstRepository(repositoryFilePath);
+        this.repository = new InMemoryTodoIstRepository();
+
+        repository.setDataFilePath(repositoryFilePath);
     }
 
     public void start() {

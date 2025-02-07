@@ -1,53 +1,63 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand;
 
 import bg.sofia.uni.fmi.mjt.project.todoist.server.commands.CommandSyntax;
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongCommandSyntaxException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongCommandSyntax;
 
 public class AccountCommandFactory {
-    private static final int RIGHT_COMMAND_TOKENS_LEN = 3;
-    private static final int HELP_COMMAND_TOKENS_LEN = 1;
+    private static final int LEN_OF_LOGIN_COMMAND = 3;
+    private static final int LEN_OF_REGISTER_COMMAND = 3;
+    private static final int LEN_OF_HELP_COMMAND = 1;
 
-    private static final int USERNAME_INDEX = 1;
-    private static final int PASSWORD_INDEX = 1;
+    private static final int COMMAND_NAME_INDEX = 0;
+    private static final int INDEX_OF_USERNAME = 1;
+    private static final int INDEX_OF_PASSWORD = 2;
 
-    private static AccountCommand createAccountCommand(String[] tokens, AccountCommandType commandType) throws WrongCommandSyntaxException {
-        if (tokens == null || commandType == null) {
+    private static AccountCommand createLoginCommand(String[] tokens) throws WrongCommandSyntax {
+        if (tokens == null) {
             throw new IllegalArgumentException("Null reference in AccountCommandFactory::createLoginCommand. ");
         }
 
-        if (tokens.length != RIGHT_COMMAND_TOKENS_LEN) {
-            switch (commandType) {
-                case REGISTER -> throw new WrongCommandSyntaxException(
-                    "Wrong syntax of register command. " + CommandSyntax.REGISTER_SYNTAX);
-                case LOGIN ->  throw new WrongCommandSyntaxException(
-                    "Wrong syntax of login command. " + CommandSyntax.LOGIN_SYNTAX);
-            }
+        if (tokens.length != LEN_OF_LOGIN_COMMAND) {
+            throw new WrongCommandSyntax(CommandSyntax.WRONG_LOGIN_SYNTAX_MESSAGE);
         }
 
-        return switch (commandType) {
-            case LOGIN -> new LoginCommand(tokens[USERNAME_INDEX], tokens[PASSWORD_INDEX]);
-            case REGISTER -> new RegisterCommand(tokens[USERNAME_INDEX], tokens[PASSWORD_INDEX]);
-        };
+        return new LoginCommand(tokens[INDEX_OF_USERNAME], tokens[INDEX_OF_PASSWORD]);
     }
 
-    private static AccountCommand createHelpCommand(String[] tokens) throws WrongCommandSyntaxException {
+    private static AccountCommand createRegisterCommand(String[] tokens) throws WrongCommandSyntax {
+        if (tokens == null) {
+            throw new IllegalArgumentException("Null reference in AccountCommandFactory::createLoginCommand. ");
+        }
+
+        if (tokens.length != LEN_OF_REGISTER_COMMAND) {
+            throw new WrongCommandSyntax(CommandSyntax.WRONG_REGISTER_SYNTAX_MESSAGE);
+        }
+
+        return new RegisterCommand(tokens[INDEX_OF_USERNAME], tokens[INDEX_OF_PASSWORD]);
+    }
+
+    private static AccountCommand createHelpCommand(String[] tokens) throws WrongCommandSyntax {
         if (tokens == null) {
             throw new IllegalArgumentException("Null reference in AccountCommandFactory::createHelpCommand. ");
         }
 
-        if (tokens.length != HELP_COMMAND_TOKENS_LEN) {
-            throw new WrongCommandSyntaxException("Wrong syntax of help command. " + CommandSyntax.HELP_SYNTAX);
+        if (tokens.length != LEN_OF_HELP_COMMAND) {
+            throw new WrongCommandSyntax("Wrong syntax of help command. " + CommandSyntax.HELP_SYNTAX);
         }
 
         return new HelpAccountCommand();
     }
 
-    public static AccountCommand of(String input) throws WrongCommandSyntaxException {
+    public static AccountCommand of(String input) throws WrongCommandSyntax {
+        if (input == null) {
+            throw new IllegalArgumentException("Null reference in AccountCommandFactory::of. ");
+        }
+
         String[] tokens = input.split(" ");
 
         return switch (tokens[0]) {
-            case "login" -> createAccountCommand(tokens, AccountCommandType.LOGIN);
-            case "register" -> createAccountCommand(tokens, AccountCommandType.REGISTER);
+            case "login" -> createLoginCommand(tokens);
+            case "register" -> createRegisterCommand(tokens);
             case "help" -> createHelpCommand(tokens);
             default -> new WrongCommand(tokens[0]);
         };

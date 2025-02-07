@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.project.todoist.server.commands.accountcommand;
 
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UserNotFoundException;
-import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongPasswordException;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.UserNotFound;
+import bg.sofia.uni.fmi.mjt.project.todoist.server.exception.WrongPassword;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.repository.TodoIstRepository;
 import bg.sofia.uni.fmi.mjt.project.todoist.server.user.User;
 
@@ -31,14 +31,14 @@ public class LoginCommand implements AccountCommand {
 
     @Override
     public AccountCommandResult execute(TodoIstRepository repository)
-        throws UserNotFoundException, WrongPasswordException {
+        throws UserNotFound, WrongPassword {
         if (repository == null) {
             throw new IllegalArgumentException("Null reference in LoginCommand::execute");
         }
 
         User userToReturn = repository.getUser(username);
         if (!userToReturn.isPasswordCorrect(password)) {
-            throw new WrongPasswordException(getExceptionMessage());
+            throw new WrongPassword(getExceptionMessage());
         }
 
         return new AccountCommandResult.Builder(getOutputMessage())
