@@ -42,6 +42,10 @@ public class InMemoryTodoIstRepository implements TodoIstRepository, Serializabl
     }
 
     public static InMemoryTodoIstRepository loadRepository(File dataFile) {
+        if (dataFile.length() == 0) {
+            return new InMemoryTodoIstRepository();
+        }
+
         try (ObjectInputStream objectStream = new ObjectInputStream(new FileInputStream(dataFile))) {
 
             return (InMemoryTodoIstRepository) objectStream.readObject();

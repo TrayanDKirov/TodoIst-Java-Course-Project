@@ -36,7 +36,7 @@ public class TodoIstClient {
 
             while (true) {
                 readInputFromServer(fromServer);
-                System.out.print("> ");
+                System.out.print(">: ");
 
                 String output = scanner.nextLine();
                 if (output.equals("disconnect")) {

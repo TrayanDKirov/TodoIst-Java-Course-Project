@@ -1,0 +1,36 @@
+register trayan pass
+add-task name=clean-kitchen description=i-should-clean-the-kitchen
+get-task name=clean-kitchen
+update-task name=clean-kitchen newDescription=i-really-should-clean-the-kitchen
+delete-task name=clean-kitchen
+
+add-task name=clean-kitchen description=i-should-clean-the-kitchen
+add-task name=walk-the-dog
+add-task name=do-homework description=i-should-do-my-homework
+
+list-tasks
+
+add-task name=clean-kitchen date=07/02/2025 description=i-should-clean-the-kitchen
+add-task name=walk-the-dog date=07/02/2025
+add-task name=do-homework date=03/02/2025 description=i-should-do-my-homework
+
+register trayan pass
+add-collaboration collaboration=project
+list-tasks collaboration=project
+
+add-task collaboration=project name=clean-kitchen date=07/02/2025 description=i-should-clean-the-kitchen
+add-task collaboration=project name=walk-the-dog date=07/02/2025
+add-task collaboration=project name=do-homework date=03/02/2025 description=i-should-do-my-homework
+
+register trayan pass
+register ivan pass
+
+login trayan pass
+
+add-collaboration collaboration=project
+add-user collaboration=project user=ivan
+
+add-task collaboration=project name=do-ex-1
+get-task collaboration=project name=do-ex-1
+finnish-task collaboration=project name=do-ex-1
+list-tasks collaboration=project
